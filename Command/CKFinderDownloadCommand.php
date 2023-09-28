@@ -163,6 +163,17 @@ class CKFinderDownloadCommand extends Command
             $targetConnectorPath . '/README.md'
         ));
 
+        $resourceTypeFactoryFile = $targetConnectorPath . '/ResourceType/ResourceTypeFactory.php';
+        $resourceTypeFactoryFileContent = \file_get_contents($resourceTypeFactoryFile);
+        if (!\str_contains($resourceTypeFactoryFileContent, 'protected $resizedImageRepository')) {
+            $resourceTypeFactoryFileContent = \str_replace('protected $thumbnailRepository;', 'protected $thumbnailRepository;' . \PHP_EOL . '    protected $resizedImageRepository;', $resourceTypeFactoryFileContent);
+            \file_put_contents($resourceTypeFactoryFile, $resourceTypeFactoryFileContent);
+        }
+
+        $imageFile = $targetConnectorPath . '/Image.php';
+        $imageFileContent = \str_replace('$newLimit.\'M\'', '((int) $newLimit).\'M\'', \file_get_contents($imageFile));
+        \file_put_contents($imageFile, $imageFileContent);
+
         $output->writeln('<info>Done. Happy coding!</info>');
         return 0;
     }
